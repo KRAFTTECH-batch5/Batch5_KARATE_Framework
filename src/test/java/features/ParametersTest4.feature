@@ -2,6 +2,7 @@ Feature: Parameter examples
 
   Background:
     * def kraftBaseUrl = "https://www.krafttechexlab.com/sw/api/v1/"
+    * def bookStoreBaseUrl = "https://bookstore.toolsqa.com"
 
   #get all information whose id is 1
   Scenario: path parameter with kraft exlab
@@ -54,9 +55,27 @@ Feature: Parameter examples
 
   # send a request to get all users from kraft exlab and verify status code
   Scenario: query parameter
+    #request
     Given url kraftBaseUrl + "/allusers/alluser"
     Given param page = 1
     Given param pagesize = 100
     When method get
+    #response
     Then status 200
 
+  Scenario: query parameter-2
+    #request
+    Given def isbnNumber = "9781449325862"
+    Given url bookStoreBaseUrl + "/BookStore/v1/Book"
+    Given param ISBN = isbnNumber
+    When method get
+    #response
+    Then status 200
+    Then match response.isbn == isbnNumber
+
+  # how to make verification with loop
+  Scenario: verification with loop
+    Given url bookStoreBaseUrl + "/BookStore/v1/Books"
+    When method get
+    Then status 200
+    Then match each response.books[*].isbn == '#string'
